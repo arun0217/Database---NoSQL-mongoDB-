@@ -1,0 +1,14 @@
+[
+  { "name": "The Green Fork", "cuisine": "Indian", "rating": 4.6 },
+  { "name": "Copper Kettle", "cuisine": "Italian", "rating": 4.3 },
+  { "name": "Saffron Table", "cuisine": "North Indian", "rating": 4.8 },
+  { "name": "Little Kyoto", "cuisine": "Japanese", "rating": 4.5 },
+  { "name": "Coastal Curry House", "cuisine": "Seafood", "rating": 4.2 },
+  { "name": "Tandoor Trail", "cuisine": "Mughlai", "rating": 4.4 },
+  { "name": "Olive & Thyme", "cuisine": "Mediterranean", "rating": 4.7 },
+  { "name": "Dosa District", "cuisine": "South Indian", "rating": 4.1 },
+  { "name": "Bao Street", "cuisine": "Chinese", "rating": 4.0 },
+  { "name": "The Curry Leaf", "cuisine": "Gujarati", "rating": 4.5 },
+  { "name": "Woodfire Social", "cuisine": "Pizza", "rating": 4.3 },
+  { "name": "Blue Door Cafe", "cuisine": "Cafe", "rating": 4.6 }
+]

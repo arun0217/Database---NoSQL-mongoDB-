@@ -1,0 +1,14 @@
+use insta_clone_db
+print('Current database: ' + db.getName())
+printjson(db.createCollection('posts'))
+printjson(db.createCollection('stories'))
+printjson(db.stories.insertOne({ username: 'arun_foodie', image_url: 'https://images.example.com/stories/cafe.jpg', timestamp: new Date('2026-09-27T18:00:00Z') }))
+printjson(db.stories.findOne())
+printjson(db.stories.drop())
+show collections
+printjson(db.getCollectionNames())
+if (db.getCollectionNames().includes('stories')) throw new Error('stories collection still exists'); print('Verified: stories is absent.')
+printjson(db.dropDatabase())
+show dbs
+printjson(db.getMongo().getDBNames())
+if (db.getMongo().getDBNames().includes('insta_clone_db')) throw new Error('insta_clone_db still exists'); print('Verified: insta_clone_db is absent.')

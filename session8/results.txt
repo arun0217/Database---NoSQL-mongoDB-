@@ -1,0 +1,47 @@
+﻿SESSION 8 - MONGODB USERS AND ROLES
+Preparing the local administrator used to manage this exercise.
+The session8 administrator already exists.
+Creating the insta_clone users and listing their roles.
+Using database: insta_clone
+Updated existing user 'storyAdmin' with the requested role.
+Updated existing user 'feedViewer' with the requested role.
+Users in insta_clone:
+{
+  _id: 'insta_clone.feedViewer',
+  userId: UUID('dab165f0-1f2a-4ecc-a21d-4b1695dd6058'),
+  user: 'feedViewer',
+  db: 'insta_clone',
+  roles: [
+    {
+      role: 'read',
+      db: 'insta_clone'
+    }
+  ],
+  mechanisms: [
+    'SCRAM-SHA-1',
+    'SCRAM-SHA-256'
+  ]
+}
+{
+  _id: 'insta_clone.storyAdmin',
+  userId: UUID('b426cba3-8ab7-4ab2-bcdd-82cc9418638a'),
+  user: 'storyAdmin',
+  db: 'insta_clone',
+  roles: [
+    {
+      role: 'dbAdmin',
+      db: 'insta_clone'
+    }
+  ],
+  mechanisms: [
+    'SCRAM-SHA-1',
+    'SCRAM-SHA-256'
+  ]
+}
+Role meanings:
+read permits reading database data without changing it.
+dbAdmin permits database administration, such as managing collections and indexes, but not reading or writing application documents.
+The built-in read role applies to the whole database. This exercise creates only posts and comments as application collections.
+Testing that feedViewer cannot insert into posts.
+Authenticated as feedViewer. Attempting to insert into posts...
+Expected authorization error (code 13): not authorized on insta_clone to execute command { insert: "posts", documents: [ { _id: "session8-readonly-permission-check", author: "feedViewer", caption: "This insert must be denied" } ], ordered: true, lsid: { id: UUID("e90b7af4-783e-4b4f-89f0-536c2edcc302") }, $db: "insta_clone" }

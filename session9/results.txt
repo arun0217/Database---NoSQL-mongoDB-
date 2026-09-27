@@ -1,0 +1,8 @@
+﻿SESSION 9 - MONGODB TOOLS
+Creating spotifyDB.playlists.
+Created or verified spotifyDB.playlists.
+Importing restaurants.json into spotifyDB.zomatoRestaurants.
+Imported 12 restaurant documents.
+Exporting spotifyDB.zomatoRestaurants to export/zomatoRestaurants.json.
+Export completed.
+Local spotifyDB.zomatoRestaurants document count: 12

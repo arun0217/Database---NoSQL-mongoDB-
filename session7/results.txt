@@ -1,0 +1,134 @@
+﻿SESSION 7 - INDEXING AND PERFORMANCE
+Database: session7_indexing
+1) All Italian restaurants:
+{
+  _id: ObjectId('6ab968862430e38104df9966'),
+  name: 'Italiano Verde',
+  cuisine: 'Italian',
+  location: 'Surat',
+  rating: 4.6
+}
+{
+  _id: ObjectId('6ab968862430e38104df9967'),
+  name: 'Trattoria Roma',
+  cuisine: 'Italian',
+  location: 'Surat',
+  rating: 4.4
+}
+{
+  _id: ObjectId('6ab968862430e38104df9968'),
+  name: 'Bella Pasta',
+  cuisine: 'Italian',
+  location: 'Ahmedabad',
+  rating: 4.7
+}
+{
+  _id: ObjectId('6ab968862430e38104df9969'),
+  name: 'Olive Oven',
+  cuisine: 'Italian',
+  location: 'Surat',
+  rating: 4.8
+}
+{
+  _id: ObjectId('6ab968862430e38104df996a'),
+  name: 'La Piazza',
+  cuisine: 'Italian',
+  location: 'Vadodara',
+  rating: 4.3
+}
+2) Italian query before adding an index:
+Before cuisine index:
+  executionTimeMillis: 0
+  totalKeysExamined: 0
+  totalDocsExamined: 20
+  nReturned: 5
+  winningPlan: {"isCached":false,"stage":"COLLSCAN","filter":{"cuisine":{"$eq":"Italian"}},"direction":"forward"}
+After cuisine index:
+  executionTimeMillis: 1
+  totalKeysExamined: 5
+  totalDocsExamined: 5
+  nReturned: 5
+  winningPlan: {"isCached":false,"stage":"FETCH","inputStage":{"stage":"IXSCAN","keyPattern":{"cuisine":1},"indexName":"cuisine_1","isMultiKey":false,"multiKeyPaths":{"cuisine":[]},"isUnique":false,"isSparse":false,"isPartial":false,"indexVersion":2,"direction":"forward","indexBounds":{"cuisine":["[\"Italian\", \"Italian\"]"]}}}
+Observation: the cuisine index reduced documents examined from 20 to 5; this run measured 0 ms before and 1 ms after indexing.
+3) Chinese restaurants in Ahmedabad using the cuisine/location index:
+{
+  _id: ObjectId('6ab968862430e38104df996b'),
+  name: 'Golden Wok',
+  cuisine: 'Chinese',
+  location: 'Ahmedabad',
+  rating: 4.5
+}
+{
+  _id: ObjectId('6ab968862430e38104df996c'),
+  name: 'Dragon Pearl',
+  cuisine: 'Chinese',
+  location: 'Ahmedabad',
+  rating: 4.2
+}
+{
+  _id: ObjectId('6ab968862430e38104df996d'),
+  name: 'Red Lantern',
+  cuisine: 'Chinese',
+  location: 'Ahmedabad',
+  rating: 4.7
+}
+Chinese in Ahmedabad:
+  executionTimeMillis: 0
+  totalKeysExamined: 3
+  totalDocsExamined: 3
+  nReturned: 3
+  winningPlan: {"isCached":false,"stage":"FETCH","inputStage":{"stage":"IXSCAN","keyPattern":{"cuisine":1,"location":1},"indexName":"cuisine_1_location_1","isMultiKey":false,"multiKeyPaths":{"cuisine":[],"location":[]},"isUnique":false,"isSparse":false,"isPartial":false,"indexVersion":2,"direction":"forward","indexBounds":{"cuisine":["[\"Chinese\", \"Chinese\"]"],"location":["[\"Ahmedabad\", \"Ahmedabad\"]"]}}}
+4) Drop the single-field cuisine index and recheck the Italian query:
+After dropping cuisine_1:
+  executionTimeMillis: 0
+  totalKeysExamined: 5
+  totalDocsExamined: 5
+  nReturned: 5
+  winningPlan: {"isCached":false,"stage":"FETCH","inputStage":{"stage":"IXSCAN","keyPattern":{"cuisine":1,"location":1},"indexName":"cuisine_1_location_1","isMultiKey":false,"multiKeyPaths":{"cuisine":[],"location":[]},"isUnique":false,"isSparse":false,"isPartial":false,"indexVersion":2,"direction":"forward","indexBounds":{"cuisine":["[\"Italian\", \"Italian\"]"],"location":["[MinKey, MaxKey]"]}}}
+Observation: after dropping cuisine_1, MongoDB examined 5 documents in 0 ms using cuisine_1_location_1's cuisine prefix.
+The timings are noisy on this 20-document fixture; the winning plan and documents examined are more useful for comparing the index paths.
+5) ChatGPT-generated top-five Pizza restaurants in Surat query:
+db.restaurants.createIndex({ cuisine: 1, location: 1, rating: -1 });
+db.restaurants.find({ cuisine: 'Pizza', location: 'Surat' }).sort({ rating: -1 }).limit(5).hint('cuisine_1_location_1_rating_-1');
+The index narrows by cuisine and location, then supplies results in descending rating order, avoiding a blocking sort.
+{
+  _id: ObjectId('6ab968862430e38104df9976'),
+  name: 'Cheese Circle',
+  cuisine: 'Pizza',
+  location: 'Surat',
+  rating: 4.9
+}
+{
+  _id: ObjectId('6ab968862430e38104df9970'),
+  name: 'Firestone Pizza',
+  cuisine: 'Pizza',
+  location: 'Surat',
+  rating: 4.8
+}
+{
+  _id: ObjectId('6ab968862430e38104df9973'),
+  name: 'Brick Oven',
+  cuisine: 'Pizza',
+  location: 'Surat',
+  rating: 4.7
+}
+{
+  _id: ObjectId('6ab968862430e38104df9971'),
+  name: 'Crust and Co',
+  cuisine: 'Pizza',
+  location: 'Surat',
+  rating: 4.6
+}
+{
+  _id: ObjectId('6ab968862430e38104df9974'),
+  name: 'Napoli Express',
+  cuisine: 'Pizza',
+  location: 'Surat',
+  rating: 4.5
+}
+Top-five Pizza query:
+  executionTimeMillis: 0
+  totalKeysExamined: 5
+  totalDocsExamined: 5
+  nReturned: 5
+  winningPlan: {"isCached":false,"stage":"LIMIT","limitAmount":5,"inputStage":{"stage":"FETCH","inputStage":{"stage":"IXSCAN","keyPattern":{"cuisine":1,"location":1,"rating":-1},"indexName":"cuisine_1_location_1_rating_-1","isMultiKey":false,"multiKeyPaths":{"cuisine":[],"location":[],"rating":[]},"isUnique":false,"isSparse":false,"isPartial":false,"indexVersion":2,"direction":"forward","indexBounds":{"cuisine":["[\"Pizza\", \"Pizza\"]"],"location":["[\"Surat\", \"Surat\"]"],"rating":["[MaxKey, MinKey]"]}}}}
